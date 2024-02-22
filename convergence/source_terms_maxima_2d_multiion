@@ -1,0 +1,145 @@
+/* Define exact solution */
+
+h:am*sin(om*(x+y-t))+2;
+hh1:am*0.4*sin(om*(x+y-t))+1;
+hh2:h-hh1;
+
+u1:hh1;
+u2:hh1;
+u3:hh1;
+u4:0.1*hh1;
+u5:2*hh1^2+hh1;
+u6:hh2;
+u7:hh2;
+u8:hh2;
+u9:0.1*hh2;
+u10:2*hh2^2+hh2;
+u11:0.25*h;
+u12:-0.25*h;
+u13:0.1*h;
+
+U: matrix([u1],[u2],[u3],[u4],[u5],[u6],[u7],[u8],[u9],[u10],[u11],[u12],[u13]);
+
+/* Define physical constants */
+
+gamma1:2;
+gamma2:4;
+R1:1;
+R2:2;
+r1:2;
+r2:1;
+
+/* Auxiliary variables */
+p1: (gamma1-1)*u5-(gamma1-1)*(u2^2+u3^2+u4^2)/(2*u1)-(gamma1-1)*(u11^2+u12^2+u13^2)/2;
+p2: (gamma2-1)*u10-(gamma2-1)*(u7^2+u8^2+u9^2)/(2*u6)-(gamma2-1)*(u11^2+u12^2+u13^2)/2;
+
+pe: 0.2 * (p1 + p2);
+
+ene: r1 * u1 + r2 * u6;
+q1: r1 * u1 / ene;
+q2: r2 * u6 / ene;
+
+vplus1_1: r1 * u2 / ene;
+vplus1_2: r1 * u3 / ene;
+vplus1_3: r1 * u4 / ene;
+vplus2_1: r2 * u7 / ene;
+vplus2_2: r2 * u8 / ene;
+vplus2_3: r2 * u9 / ene;
+
+vplus_1: vplus1_1 + vplus2_1;
+vplus_2: vplus1_2 + vplus2_2;
+vplus_3: vplus1_3 + vplus2_3;
+
+vminus1_1: vplus_1 - vplus1_1;
+vminus1_2: vplus_2 - vplus1_2;
+vminus1_3: vplus_3 - vplus1_3;
+vminus2_1: vplus_1 - vplus2_1;
+vminus2_2: vplus_2 - vplus2_2;
+vminus2_3: vplus_3 - vplus2_3;
+
+pmag: (u11^2+u12^2+u13^2)/2;
+
+/* Flux in x*/
+
+f1: u2;
+f2: u2*u2/u1 + p1; 
+f3: u2*u3/u1;
+f4: u2*u4/u1;
+f5: u2*((u2^2+u3^2+u4^2)/(2*u1) + gamma1*(p1)/(gamma1-1))/u1 + vplus1_1*(u11^2+u12^2+u13^2) - u11*(u11*vplus1_1 + u12*vplus1_2 + u13*vplus1_3);
+f6: u7;
+f7: u7*u7/u6 + p2; 
+f8: u7*u8/u6;
+f9: u7*u9/u6;
+f10: u7*((u7^2+u8^2+u9^2)/(2*u6) + gamma2*(p2)/(gamma2-1))/u6 + vplus2_1*(u11^2+u12^2+u13^2) - u11*(u11*vplus2_1 + u12*vplus2_2 + u13*vplus2_3);
+f11: 0;
+f12: vplus_1*u12 - vplus_2*u11;
+f13: vplus_1*u13 - vplus_3*u11;
+
+
+F: matrix([f1],[f2],[f3],[f4],[f5],[f6],[f7],[f8],[f9],[f10],[f11],[f12],[f13]);
+
+
+/* Flux in y*/
+
+g1: u3;
+g2: u3*u2/u1; 
+g3: u3*u3/u1 + p1;
+g4: u3*u4/u1;
+g5: u3*((u2^2+u3^2+u4^2)/(2*u1) + gamma1*(p1)/(gamma1-1))/u1 + vplus1_2*(u11^2+u12^2+u13^2) - u12*(u11*vplus1_1 + u12*vplus1_2 + u13*vplus1_3);
+g6: u8;
+g7: u8*u7/u6; 
+g8: u8*u8/u6 + p2;
+g9: u8*u9/u6;
+g10: u7*((u7^2+u8^2+u9^2)/(2*u6) + gamma2*(p2)/(gamma2-1))/u6 + vplus2_2*(u11^2+u12^2+u13^2) - u12*(u11*vplus2_1 + u12*vplus2_2 + u13*vplus2_3);
+g11: vplus_2*u11 - vplus_1*u12;
+g12: 0;
+g13: vplus_2*u13 - vplus_3*u12;
+
+
+G: matrix([g1],[g2],[g3],[g4],[g5],[g6],[g7],[g8],[g9],[g10],[g11],[g12],[g13]);
+
+
+/* Non-conservative terms 
+   * Not considering electron pressure yet!
+   * Godunov-Powell term is not needed!
+*/
+
+n1: 0;
+n2: q1 * ( diff(-u11 * u11 + pmag + pe, x) + diff(-u12 * u11, y) );
+n3: q1 * ( diff(-u11 * u12, x)             + diff(-u12 * u12 + pmag + pe, y) );
+n4: q1 * ( diff(-u11 * u13, x)             + diff(-u12 * u13, y) );
+n5: u12 * diff(vminus1_1 * u12 - vminus1_2 * u11, x) + u13 * diff(vminus1_1 * u13 - vminus1_3 * u11, x) + u11 * diff(vminus1_2 * u11 - vminus1_1 * u12, y) + u13 * diff(vminus1_2 * u13 - vminus1_3 * u12, y) + vplus1_1 * diff(pe, x) + vplus1_2 * diff(pe, y);
+n6: 0;
+n7: q2 * ( diff(-u11 * u11 + pmag + pe, x) + diff(-u12 * u11, y) );
+n8: q2 * ( diff(-u11 * u12, x)             + diff(-u12 * u12 + pmag + pe, y) );
+n9: q2 * ( diff(-u11 * u13, x)             + diff(-u12 * u13, y) );
+n10: u12 * diff(vminus2_1 * u12 - vminus2_2 * u11, x) + u13 * diff(vminus2_1 * u13 - vminus2_3 * u11, x) + u11 * diff(vminus2_2 * u11 - vminus2_1 * u12, y) + u13 * diff(vminus2_2 * u13 - vminus2_3 * u12, y) + vplus2_1 * diff(pe, x) + vplus2_2 * diff(pe, y);
+n11: 0;
+n12: 0;
+n13: 0;
+
+NONCON: matrix([n1],[n2],[n3],[n4],[n5],[n6],[n7],[n8],[n9],[n10],[n11],[n12],[n13]);
+
+/* Source terms (standard)*/
+s1: 0;
+s2: r1 * u1 * ( (vplus_2 - u3/u1) * u13 - (vplus_3 - u4/u1) * u12 );
+s3: r1 * u1 * ( (vplus_3 - u4/u1) * u11 - (vplus_1 - u2/u1) * u13 );
+s4: r1 * u1 * ( (vplus_1 - u2/u1) * u12 - (vplus_2 - u3/u1) * u11 );
+s5: (u2 * s2 + u3 * s3 + u4 * s4) / u1;
+s6: 0;
+s7: r2 * u6 * ( (vplus_2 - u8/u6) * u13 - (vplus_3 - u9/u6) * u12 );
+s8: r2 * u6 * ( (vplus_3 - u9/u6) * u11 - (vplus_1 - u7/u6) * u13 );
+s9: r2 * u6 * ( (vplus_1 - u7/u6) * u12 - (vplus_2 - u8/u6) * u11 );
+s10: (u7 * s7 + u8 * s8 + u9 * s9) / u6;
+s11: 0;
+s12: 0;
+s13: 0;
+
+Sstd: matrix([s1],[s2],[s3],[s4],[s5],[s6],[s7],[s8],[s9],[s10],[s11],[s12],[s13]);
+
+/* Compute source term for manufactured solution*/
+
+S: diff(U,t) + diff(F,x) + diff(G,y) + NONCON + Sstd;
+
+Sadv: subst([am*sin(om*x+om*y-om*t) = hh,om*am*cos(om*x+om*y-om*t) = hx],ratsimp(S))
+

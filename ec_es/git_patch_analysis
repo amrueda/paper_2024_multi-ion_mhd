@@ -1,0 +1,17 @@
+diff --git a/src/callbacks_step/analysis.jl b/src/callbacks_step/analysis.jl
+index ba2320329..9927e260b 100644
+--- a/src/callbacks_step/analysis.jl
++++ b/src/callbacks_step/analysis.jl
+@@ -590,9 +590,9 @@ function analyze_integrals(analysis_integrals::NTuple{N, Any}, io, du, u, t,
+ 
+     res = analyze(quantity, du, u, t, semi)
+     if mpi_isroot()
+-        @printf(" %-12s:", pretty_form_utf(quantity))
+-        @printf("  % 10.8e", res)
+-        @printf(io, "  % 10.8e", res)
++        @printf(" %-22s:", pretty_form_utf(quantity))
++        @printf("  % 20.18e", res)
++        @printf(io, "  % 20.18e", res)
+     end
+     mpi_println()
+ 
