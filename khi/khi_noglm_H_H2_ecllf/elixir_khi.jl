@@ -101,7 +101,7 @@ summary_callback = SummaryCallback()
 analysis_interval = 100
 analysis_callback = AnalysisCallback(semi, 
                                      interval=analysis_interval, 
-                                     extra_analysis_integrals=(poloidal_field, ),
+                                     extra_analysis_integrals=(poloidal_field, Val(:l2_divb_over_curlb)),
                                      save_analysis=true,
                                      output_directory=joinpath(@__DIR__, "out"))
 alive_callback = AliveCallback(analysis_interval=analysis_interval)

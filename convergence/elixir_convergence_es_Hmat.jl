@@ -116,7 +116,9 @@ ode = semidiscretize(semi, tspan)
 summary_callback = SummaryCallback()
 
 analysis_interval = 100
-analysis_callback = AnalysisCallback(semi, interval=analysis_interval)
+analysis_callback = AnalysisCallback(semi, interval=analysis_interval,
+					   save_analysis=true,
+			                   output_directory=joinpath(@__DIR__, "out"*string(mesh.tree.length)))
 alive_callback = AliveCallback(analysis_interval=analysis_interval)
 
 save_solution = SaveSolutionCallback(interval=1000,
