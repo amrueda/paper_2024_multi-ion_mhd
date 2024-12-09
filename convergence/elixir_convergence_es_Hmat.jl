@@ -4,10 +4,10 @@ using Trixi
 
 ###############################################################################
 """
-  electron_pressure_alpha(u, equations::IdealMhdMultiIonEquations2D)
+  electron_pressure_alpha(u, equations::IdealGlmMhdMultiIonEquations2D)
 Returns a fraction (alpha) of the total ion pressure for the electron pressure.
 """
-function electron_pressure_alpha(u, equations::IdealMhdMultiIonEquations2D)
+function electron_pressure_alpha(u, equations::IdealGlmMhdMultiIonEquations2D)
     alpha = 0.2
     prim = cons2prim(u, equations)
     p_e = zero(u[1])
@@ -18,7 +18,7 @@ function electron_pressure_alpha(u, equations::IdealMhdMultiIonEquations2D)
     return alpha * p_e
 end
 # semidiscretization of the ideal multi-ion MHD equations
-equations = IdealMhdMultiIonEquations2D(gammas = (2.0, 4.0),
+equations = IdealGlmMhdMultiIonEquations2D(gammas = (2.0, 4.0),
                                         charge_to_mass = (2.0, 1.0),
                                         electron_pressure = electron_pressure_alpha)
 
@@ -28,7 +28,7 @@ Initial (and exact) solution for the the manufactured solution test. Runs with
 * charge_to_mass = (2.0, 1.0)
 * Domain size: [-1,1]²
 """
-function initial_condition_manufactured_solution(x, t, equations::IdealMhdMultiIonEquations2D)
+function initial_condition_manufactured_solution(x, t, equations::IdealGlmMhdMultiIonEquations2D)
     am = 0.1
     om = π
     h = am * sin(om * (x[1] + x[2] - t)) + 2
@@ -58,7 +58,7 @@ Source term that corresponds to the manufactured solution test. Runs with
 * charge_to_mass = (2.0, 1.0)
 * Domain size: [-1,1]²
 """
-function source_terms_manufactured_solution_pe(u, x, t, equations::IdealMhdMultiIonEquations2D)
+function source_terms_manufactured_solution_pe(u, x, t, equations::IdealGlmMhdMultiIonEquations2D)
     am = 0.1
     om = pi
     h1 = am * sin(om * (x[1] + x[2] - t))
@@ -79,7 +79,7 @@ function source_terms_manufactured_solution_pe(u, x, t, equations::IdealMhdMulti
     s13 = hx / 10
 
     s = SVector{nvariables(equations), real(equations)}([s11, s12, s13, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, 0])
-    S_std = source_terms_standard(u, x, t, equations::IdealMhdMultiIonEquations2D)
+    S_std = source_terms_lorentz(u, x, t, equations::IdealGlmMhdMultiIonEquations2D)
 
     return SVector{nvariables(equations), real(equations)}(S_std .+ s)
 end
@@ -95,7 +95,7 @@ surface_flux = (flux_es, flux_nonconservative_ruedaramirez_etal)
 solver = DGSEM(polydeg=3, surface_flux=surface_flux,
                volume_integral=VolumeIntegralFluxDifferencing(volume_flux))
 
-coordinates_min = (-1.0, 1.0)
+coordinates_min = (-1.0, -1.0)
 coordinates_max = (1.0, 1.0)
 
 mesh = TreeMesh(coordinates_min, coordinates_max,
