@@ -32,8 +32,8 @@ Initial (and exact) solution for the the manufactured solution test. Runs with
 function initial_condition_manufactured_solution(x, t, equations::IdealGlmMhdMultiIonEquations3D)
     am = 0.1
     om = π
-    h = am * sin(om * (x[1] + x[2] - t)) + 2
-    hh1 = am * 0.4 * sin(om*(x[1] + x[2] - t)) + 1
+    h = am * sin(om * (x[1] + x[2] + x[3] - t)) + 2
+    hh1 = am * 0.4 * sin(om*(x[1] + x[2] + x[3] - t)) + 1
     hh2 = h-hh1
 
     rho_1 = hh1
@@ -121,7 +121,8 @@ alive_callback = AliveCallback(analysis_interval=analysis_interval)
 save_solution = SaveSolutionCallback(interval=100,
                                      save_initial_solution=true,
                                      save_final_solution=true,
-                                     solution_variables=cons2prim)
+                                     solution_variables=cons2prim
+                                     output_directory=joinpath(@__DIR__, "out"))
 
 cfl = 0.5
 stepsize_callback = StepsizeCallback(cfl = cfl)
