@@ -87,7 +87,7 @@ end
 initial_condition = initial_condition_manufactured_solution
 source_terms = source_terms_manufactured_solution_pe
 
-flux_es = FluxPlusDissipation(flux_ruedaramirez_etal, DissipationEntropyStable())
+flux_es = FluxPlusDissipation(flux_ruedaramirez_etal, DissipationLaxFriedrichsEntropyVariables())
 
 volume_flux = (flux_ruedaramirez_etal, flux_nonconservative_ruedaramirez_etal)
 surface_flux = (flux_es, flux_nonconservative_ruedaramirez_etal)
