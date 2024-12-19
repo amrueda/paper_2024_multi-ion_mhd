@@ -89,7 +89,7 @@ initial_condition = initial_condition_manufactured_solution
 source_terms = source_terms_manufactured_solution_pe
 
 volume_flux = (flux_ruedaramirez_etal, flux_nonconservative_ruedaramirez_etal)
-surface_flux = (FluxPlusDissipation(flux_ruedaramirez_etal, DissipationEntropyStable()), flux_nonconservative_ruedaramirez_etal)
+surface_flux = (FluxPlusDissipation(flux_ruedaramirez_etal, DissipationLaxFriedrichsEntropyVariables()), flux_nonconservative_ruedaramirez_etal)
 
 solver = DGSEM(polydeg=3, surface_flux=surface_flux,
                volume_integral=VolumeIntegralFluxDifferencing(volume_flux))

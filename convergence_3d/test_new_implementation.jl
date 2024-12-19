@@ -4,14 +4,14 @@
 #     end
 # end
 
-# open(joinpath(@__DIR__,"log_llf_n3_new.txt"), "w") do io
-#     redirect_stdout(io) do
-#         convergence_test(joinpath(@__DIR__,"elixir_convergence_llf.jl"), 3, polydeg=3, initial_refinement_level = 3)
-#     end
-# end
-
-open(joinpath(@__DIR__,"log_es_hmat_n3_new.txt"), "w") do io
+open(joinpath(@__DIR__,"log_llf_n3_new.txt"), "w") do io
     redirect_stdout(io) do
-        convergence_test(joinpath(@__DIR__,"elixir_convergence_es_Hmat.jl"), 3, polydeg=3, initial_refinement_level = 3)
+        convergence_test(joinpath(@__DIR__,"elixir_convergence_llf.jl"), 3, polydeg=3, initial_refinement_level = 1)
     end
 end
+
+# open(joinpath(@__DIR__,"log_es_hmat_n3_new.txt"), "w") do io
+#     redirect_stdout(io) do
+#         convergence_test(joinpath(@__DIR__,"elixir_convergence_es_Hmat.jl"), 3, polydeg=3, initial_refinement_level = 1)
+#     end
+# end
